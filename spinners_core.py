@@ -145,10 +145,7 @@ class App:
                                      (self.border*2+self.size)*row,
                                      self.size,self.size)
         if self.locked_count > self.width * self.height / 2:
-          print "You have added",self.locked_count,"squares to your empire."
-          print "That's over half of all the squares!"
-          print "VICTORY!"
-          pygame.quit()
+          self.play_again_screen("You have added "+str(self.locked_count)+" squares to your empire. Victory!")
       pygame.quit()
     except AttributeError as aerr:
       print "AttributeError"
@@ -159,11 +156,14 @@ class App:
 
   def play_again_screen(self,message):
     done = False
+    text_surface = self.my_font.render(message, False, (255,255,255))
+    text_width, text_height = self.my_font.size(message)
+    #print "Text width:",text_width
+    #print "Text height:",text_height
     pygame.draw.rect(self.screen,(30,30,30),
-                     pygame.Rect(80,80,470,50))
+                     pygame.Rect(80,80,text_width+40,50)) #470
     pygame.draw.rect(self.screen,(30,30,30),
                      pygame.Rect(80,130,200,50))
-    text_surface = self.my_font.render(message, False, (255,255,255))
     self.screen.blit(text_surface,(100,100))
     text_surface_2 = self.my_font.render("Play again? (y/n)", False, (255,255,255))
     self.screen.blit(text_surface_2,(100,150))
