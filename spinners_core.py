@@ -23,6 +23,7 @@ class GameException(Exception):
 class Space:
   def __init__(self, visibility=Visibility.visible):
     self.visibility = visibility
+    self.resource_type = 0 #no resource
     self.color = (random.randint(0,255),
                   random.randint(0,255),
                   random.randint(0,255))
@@ -32,6 +33,7 @@ class Space:
                         random.randint(0,1)) #left
     if self.connections == (0,0,0,0):
       self.connections = (1,1,1,1) #No void squares, more plus signs
+      self.resource_type = 1
 
   def rotate_left(self):
     if self.visibility == Visibility.visible:
@@ -92,6 +94,22 @@ class Space:
                      (255,255,255),
                      pygame.Rect(left,
                                  top+height/2-1,width/2,2))
+    if self.resource_type==0:
+      return
+    elif self.resource_type==1:
+      #Fill circle
+      pygame.draw.circle(screen,
+                     (0,0,0),
+                     (left+width/2,top+height/2), #center position
+                     min(height,width)/4, #radius
+                     0) #border width
+      #Border circle
+      pygame.draw.circle(screen,
+                     (255,255,255),
+                     (left+width/2,top+height/2), #center position
+                     min(height,width)/4, #radius
+                     2) #border width
+
 
 class App:
   def __init__(self): #Setup the board game info
