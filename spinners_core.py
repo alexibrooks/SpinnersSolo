@@ -137,6 +137,7 @@ class App:
       #start_x = 0
       #start_y = 0
       self.home_color = self.board[start_y][start_x].color
+      self.board[start_y][start_x].resource_type = 1 #Always start on a resource
       self.lock(self.board[start_y][start_x])
       self.cascade(start_x,start_y)
 
