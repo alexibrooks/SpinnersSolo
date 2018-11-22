@@ -34,6 +34,10 @@ class Space:
     if self.connections == (0,0,0,0):
       self.connections = (1,1,1,1) #No void squares, more plus signs
       self.resource_type = 1
+    cheat_mode = False
+    if cheat_mode:
+      if random.randint(0,9)==0:
+        self.connections = (1,1,1,1)
 
   def rotate_left(self):
     if self.visibility == Visibility.visible:
@@ -149,6 +153,8 @@ class App:
       done = False
 
       while not done:
+        if self.locked_count > self.width * self.height / 2:
+          self.play_again_screen("You have added "+str(self.locked_count)+" squares to your empire. Victory!")
         for event in pygame.event.get(): #empty the event queue. IMPORTANT SIDE-EFFECT
           if event.type == pygame.QUIT:
             done = True
@@ -163,8 +169,6 @@ class App:
                                      self.margin_top+self.border+
                                      (self.border*2+self.size)*row,
                                      self.size,self.size)
-        if self.locked_count > self.width * self.height / 2:
-          self.play_again_screen("You have added "+str(self.locked_count)+" squares to your empire. Victory!")
       pygame.quit()
     except AttributeError as aerr:
       print "AttributeError"
