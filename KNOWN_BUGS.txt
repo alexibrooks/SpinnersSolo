@@ -1,0 +1,3 @@
+Known Bugs:
+
+-When quitting after at least two plays, pygame.quit() gets called before the last call to flip(), throwing an exception.
