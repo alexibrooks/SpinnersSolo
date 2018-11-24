@@ -128,54 +128,62 @@ class App:
     self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
 
   def on_execute(self): #launch the game after setup (call constructor first!)
-    try:
-      pygame.init()
+    play = True
+    pygame.init()
 
-      self.my_font = pygame.font.SysFont('Average', 30)
+    while play:
+      try:
+        self.my_font = pygame.font.SysFont('Average', 30)
 
-      self.locked_count = 0
-      self.board = [[Space(Visibility.hidden) for x in range(self.width)] for y in range(self.height)]
+        self.locked_count = 0
+        self.board = [[Space(Visibility.hidden) for x in range(self.width)] for y in range(self.height)]
 
-      start_x = random.randint(0,self.width-1)
-      start_y = random.randint(0,self.height-1)
-      #start_x = 0
-      #start_y = 0
-      self.home_color = self.board[start_y][start_x].color
-      self.board[start_y][start_x].resource_type = 1 #Always start on a resource
-      self.lock(self.board[start_y][start_x])
-      self.cascade(start_x,start_y)
+        start_x = random.randint(0,self.width-1)
+        start_y = random.randint(0,self.height-1)
+        #start_x = 0
+        #start_y = 0
+        self.home_color = self.board[start_y][start_x].color
+        self.board[start_y][start_x].resource_type = 1 #Always start on a resource
+        self.lock(self.board[start_y][start_x])
+        self.cascade(start_x,start_y)
 
-      text_surface = self.my_font.render("A: rotate anti-clockwise. S: rotate clockwise. Q: quit",
-                                         False, (255,255,255))
-      self.screen.blit(text_surface,(self.margin_left,
-                                     self.screen_height-self.margin_top+20))
+        text_surface = self.my_font.render("A: rotate anti-clockwise. S: rotate clockwise. Q: quit",
+                                           False, (255,255,255))
+        self.screen.blit(text_surface,(self.margin_left,
+                                       self.screen_height-self.margin_top+20))
 
-      done = False
+        game_over = False
 
-      while not done:
-        if self.locked_count > self.width * self.height / 2:
-          self.play_again_screen("You have added "+str(self.locked_count)+" squares to your empire. Victory!")
-        for event in pygame.event.get(): #empty the event queue. IMPORTANT SIDE-EFFECT
-          if event.type == pygame.QUIT:
-            done = True
-          if event.type == pygame.KEYDOWN:
-            self.register_action(event)
-        pygame.display.flip() #pygame is double-buffered. this swaps for viz.
-        for row in range(self.height):
-          for col in range(self.width):
-            self.board[row][col].draw(self.screen,
-                                     self.margin_left+self.border+
-                                     (self.border*2+self.size)*col,
-                                     self.margin_top+self.border+
-                                     (self.border*2+self.size)*row,
-                                     self.size,self.size)
-      pygame.quit()
-    except AttributeError as aerr:
-      print "AttributeError"
-      print aerr
-      logging.exception('Caught one.')
-      print "An exception has occurred. Quitting now..."
-      pygame.quit()
+        while not game_over:
+          if self.locked_count > self.width * self.height / 2:
+            self.play_again_screen("You have added "+str(self.locked_count)+" squares to your empire. Victory!")
+          for event in pygame.event.get(): #empty the event queue. IMPORTANT SIDE-EFFECT
+            if event.type == pygame.QUIT:
+              game_over = True
+              play = False
+            if event.type == pygame.KEYDOWN:
+              self.register_action(event)
+          if play:
+            self.update()
+        if not play:
+          pygame.quit()
+      except AttributeError as aerr:
+        print "AttributeError"
+        print aerr
+        logging.exception('Caught one.')
+        print "An exception has occurred. Quitting now..."
+        pygame.quit()
+
+  def update(self):
+    pygame.display.flip() #pygame is double-buffered. this swaps for viz.
+    for row in range(self.height):
+      for col in range(self.width):
+        self.board[row][col].draw(self.screen,
+                                 self.margin_left+self.border+
+                                 (self.border*2+self.size)*col,
+                                 self.margin_top+self.border+
+                                 (self.border*2+self.size)*row,
+                                 self.size,self.size)
 
   def play_again_screen(self,message):
     done = False
